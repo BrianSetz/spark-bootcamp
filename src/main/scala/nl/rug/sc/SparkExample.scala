@@ -10,7 +10,7 @@ class SparkExample {
   private val master = "local[*]" // local[*] means a local cluster with * being the amount of workers, * = 1 worker per cpu core. Always have at least 2 workers (local[2])
 
   /**
-    * An example using RDD's
+    * An example using RDD's, try to avoid RDD's
     */
   def rddExample(): Unit = {
     val sparkConf = new SparkConf()
@@ -33,7 +33,7 @@ class SparkExample {
   }
 
   /**
-    * An example using Data Frames, improvement over RDD
+    * An example using Data Frames, improvement over RDD but Data Sets are preferred
     */
   def dataFrameExample(): Unit = {
     val sparkSession = SparkSession // Usually you only create one Spark Session in your application, but for demo purpose we recreate them
