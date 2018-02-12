@@ -2,6 +2,8 @@ name := "spark-bootcamp" // Project name
 
 version := "0.1" // Project version
 
+organization := "nl.rug.sc" // Organization name, used when packaging
+
 scalaVersion := "2.11.12" // Only 2.11.x and 2.10.x are supported
 
 val sparkVersion = "2.2.1" // Latest version
