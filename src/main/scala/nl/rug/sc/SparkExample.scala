@@ -6,19 +6,13 @@ import org.apache.spark.{SparkConf, SparkContext}
 
 case class Person(id: Int, name: String, grade: Double) // For the advanced data set example, has to be defined outside the scope
 
-class SparkExample {
-  private val master = "local[*]" // local[*] means a local cluster with * being the amount of workers, * = 1 worker per cpu core. Always have at least 2 workers (local[2])
+class SparkExample(sparkSession: SparkSession, pathToCsv: String) {
+  private val sparkContext = sparkSession.sparkContext
 
   /**
     * An example using RDD's, try to avoid RDD's
     */
   def rddExample(): Unit = {
-    val sparkConf = new SparkConf()
-      .setAppName("spark-bootcamp-rdd") // App name, makes tracking it in the UI much easier
-      .setMaster(master)
-
-    val sparkContext = new SparkContext(sparkConf)
-
     val data = List(1, 2, 3, 4, 5)
     val rdd = sparkContext.parallelize(data)
 
@@ -28,20 +22,12 @@ class SparkExample {
       .foreach(println) // Print each item in the list
 
     printContinueMessage()
-
-    sparkContext.stop() // Only one context allowed by Java VM
   }
 
   /**
     * An example using Data Frames, improvement over RDD but Data Sets are preferred
     */
   def dataFrameExample(): Unit = {
-    val sparkSession = SparkSession // Usually you only create one Spark Session in your application, but for demo purpose we recreate them
-      .builder()
-      .appName("spark-bootcamp-ds")
-      .master(master)
-      .getOrCreate()
-
     import sparkSession.implicits._ // Data in dataframes must be encoded (serialized), these implicits give support for primitive types and Case Classes
     import scala.collection.JavaConverters._
 
@@ -65,20 +51,12 @@ class SparkExample {
     dataFrame.printSchema() // Data frames and data sets have schemas
 
     printContinueMessage()
-
-    sparkSession.stop()
   }
 
   /**
     * An example using Data Sets, improvement over both RDD and Data Frames
     */
   def dataSetExample(): Unit = {
-    val sparkSession = SparkSession
-      .builder()
-      .appName("spark-bootcamp-ds")
-      .master(master)
-      .getOrCreate()
-
     import sparkSession.implicits._ // Data in datasets must be encoded (serialized), these implicits give support for primitive types and Case Classes
 
     val dataSet = sparkSession.createDataset(List(1, 2, 3, 4, 5))
@@ -91,8 +69,6 @@ class SparkExample {
     dataSet.printSchema()
 
     printContinueMessage()
-
-    sparkSession.stop()
   }
 
   /**
@@ -100,14 +76,7 @@ class SparkExample {
     * We use a CSV containing 3200 US cities as an example data set.
     */
   def dataSetAdvancedExample(): Unit = {
-    val sparkSession = SparkSession
-      .builder()
-      .appName("spark-bootcamp-ds-adv")
-      .master(master)
-      .getOrCreate()
-
     import sparkSession.implicits._
-
 
     val dataSet = sparkSession.createDataset(List(
       Person(1, "Alice", 5.5),
@@ -135,24 +104,16 @@ class SparkExample {
     dataSet.printSchema()
 
     printContinueMessage()
-
-    sparkSession.stop()
   }
 
   /**
     * In your case, you will be reading your data from a database, or (csv, json) file, instead of creating the data in code as we have previously done.
     */
   def dataSetRealisticExample(): Unit = {
-    val sparkSession = SparkSession
-      .builder()
-      .appName("spark-bootcamp-ds-adv")
-      .master(master)
-      .getOrCreate()
-
     val dataSet = sparkSession.read
       .option("header", "true") // First line in the csv is the header, will be used to name columns
       .option("inferSchema", "true") // Infers the data types (primitives), otherwise the schema will consists of Strings only
-      .csv(getClass.getResource("/csv/2014_us_cities.csv").getPath) // Loads the data from the resources folder in src/main/resources, can also be a path on your storage device
+      .csv(pathToCsv) // Loads the data from the resources folder in src/main/resources, can also be a path on your storage device
 
     dataSet.show() // Show first 20 results
 
@@ -194,8 +155,6 @@ class SparkExample {
     dataSet.printSchema()
 
     printContinueMessage()
-
-    sparkSession.stop()
   }
 
   private def printContinueMessage(): Unit = {
