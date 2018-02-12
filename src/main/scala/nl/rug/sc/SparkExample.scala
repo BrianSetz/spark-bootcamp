@@ -96,8 +96,7 @@ class SparkExample {
   }
 
   /**
-    * Advanced data set example using Scala's Case Classes for more complex data, note that the Case Class is defined at the top of this file
-    * We use a CSV containing 3200 US cities as an example data set.
+    * Advanced data set example using Scala's Case Classes for more complex data, note that the Case Class is defined at the top of this file.
     */
   def dataSetAdvancedExample(): Unit = {
     val sparkSession = SparkSession
@@ -141,6 +140,7 @@ class SparkExample {
 
   /**
     * In your case, you will be reading your data from a database, or (csv, json) file, instead of creating the data in code as we have previously done.
+    * We use a CSV containing 3200 US cities as an example data set.
     */
   def dataSetRealisticExample(): Unit = {
     val sparkSession = SparkSession
